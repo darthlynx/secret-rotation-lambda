@@ -6,8 +6,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/darthlynx/secret-rotation-lambda/internal/config"
 	"github.com/darthlynx/secret-rotation-lambda/internal/models"
+	"github.com/darthlynx/secret-rotation-lambda/internal/validator"
 )
 
 const (
@@ -32,7 +32,7 @@ func New() *SecretGenerator {
 }
 
 func (g *SecretGenerator) Generate(opts models.GeneratorOptions) (string, error) {
-	if err := config.ValidateGeneratorOptions(opts); err != nil {
+	if err := validator.ValidateGeneratorOptions(opts); err != nil {
 		return "", err
 	}
 

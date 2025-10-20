@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/darthlynx/secret-rotation-lambda/internal/config"
+	"github.com/darthlynx/secret-rotation-lambda/internal/validator"
 	"github.com/darthlynx/secret-rotation-lambda/internal/generator"
 	"github.com/darthlynx/secret-rotation-lambda/internal/models"
 	"github.com/darthlynx/secret-rotation-lambda/internal/secretsmanager"
@@ -26,7 +26,7 @@ func New(smClient secretsmanager.Client, gen generator.Generator) *Rotator {
 
 // RotateSecret performs the secret rotation based on the request.
 func (r *Rotator) RotateSecret(ctx context.Context, req models.RotationRequest) (*models.RotationResponse, error) {
-	if err := config.ValidateRotationRequest(req); err != nil {
+	if err := validator.ValidateRotationRequest(req); err != nil {
 		return &models.RotationResponse{
 			Success:   false,
 			SecretARN: req.SecretARN,
