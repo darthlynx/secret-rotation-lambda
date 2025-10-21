@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/darthlynx/secret-rotation-lambda/internal/validator"
 	"github.com/darthlynx/secret-rotation-lambda/internal/generator"
 	"github.com/darthlynx/secret-rotation-lambda/internal/models"
 	"github.com/darthlynx/secret-rotation-lambda/internal/secretsmanager"
+	"github.com/darthlynx/secret-rotation-lambda/internal/validator"
 )
 
 // Rotator handles secret rotation logic.

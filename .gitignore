@@ -1,0 +1,8 @@
+# Build artifacts
+bin/
+lambda.zip
+
+# Coverage files
+coverage.out
+coverage.html
+
