@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.39.3
 	github.com/aws/aws-sdk-go-v2/config v1.31.13
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.39.7
+	github.com/sethvargo/go-password v0.3.1
 )
 
 require (

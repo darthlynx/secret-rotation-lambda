@@ -39,8 +39,7 @@ func TestRotateSecret_Plaintext(t *testing.T) {
 		SecretARN:  "arn:aws:secretsmanager:us-east-1:123456789012:secret:test",
 		SecretType: models.SecretTypePlaintext,
 		GeneratorOpts: models.GeneratorOptions{
-			Length:           16,
-			IncludeLowercase: true,
+			Length: 16,
 		},
 	}
 
@@ -92,9 +91,8 @@ func TestRotateSecret_KeyValue(t *testing.T) {
 		SecretARN:  "arn:aws:secretsmanager:us-east-1:123456789012:secret:test",
 		SecretType: models.SecretTypeKeyValue,
 		GeneratorOpts: models.GeneratorOptions{
-			Length:           20,
-			IncludeLowercase: true,
-			IncludeDigits:    true,
+			Length:        20,
+			IncludeDigits: true,
 		},
 		KeyValueConfig: &models.KeyValueConfig{
 			KeysToRotate: []string{"password", "api_key"},

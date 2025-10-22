@@ -1,21 +1,10 @@
 package generator
 
 import (
-	"crypto/rand"
 	"errors"
-	"math/big"
-	"strings"
 
 	"github.com/darthlynx/secret-rotation-lambda/internal/models"
-	"github.com/darthlynx/secret-rotation-lambda/internal/validator"
-)
-
-const (
-	lowercaseChars = "abcdefghijklmnopqrstuvwxyz"
-	uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	digitChars     = "0123456789"
-	specialChars   = "!@#$%^&*()_+-=[]{}|;:,.<>?"
-	ambiguousChars = "0Ol1"
+	"github.com/sethvargo/go-password/password"
 )
 
 // Generator defines the interface for secret generation.
@@ -31,58 +20,24 @@ func New() *SecretGenerator {
 	return &SecretGenerator{}
 }
 
+// Generate creates a new secret based on the provided options
+//
+// Number of digits and symbols are calculated as 1/4 of the total length if included.
 func (g *SecretGenerator) Generate(opts models.GeneratorOptions) (string, error) {
-	if err := validator.ValidateGeneratorOptions(opts); err != nil {
+	if opts.Length < 8 {
+		return "", errors.New("length must be at least 8")
+	}
+	numDigits := 0
+	if opts.IncludeDigits {
+		numDigits = opts.Length / 4
+	}
+	numSymbols := 0
+	if opts.IncludeSpecialChars {
+		numSymbols = opts.Length / 4
+	}
+	secret, err := password.Generate(opts.Length, numDigits, numSymbols, opts.IncludeUppercase, true) // allow characters repeat
+	if err != nil {
 		return "", err
 	}
-
-	charset := buildCharset(opts)
-	if len(charset) == 0 {
-		return "", errors.New("no character types selected")
-	}
-
-	secret := make([]byte, opts.Length)
-	for i := range secret {
-		idx, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-		if err != nil {
-			return "", err
-		}
-		secret[i] = charset[idx.Int64()]
-	}
 	return string(secret), nil
-}
-
-func buildCharset(opts models.GeneratorOptions) string {
-	var charset strings.Builder
-
-	if opts.IncludeLowercase {
-		charset.WriteString(lowercaseChars)
-	}
-	if opts.IncludeUppercase {
-		charset.WriteString(uppercaseChars)
-	}
-	if opts.IncludeDigits {
-		charset.WriteString(digitChars)
-	}
-	if opts.IncludeSpecialChars {
-		charset.WriteString(specialChars)
-	}
-
-	result := charset.String()
-
-	if opts.ExcludeAmbiguous {
-		result = removeAmbiguousChars(result)
-	}
-
-	return result
-}
-
-func removeAmbiguousChars(charset string) string {
-	var result strings.Builder
-	for _, ch := range charset {
-		if !strings.ContainsRune(ambiguousChars, ch) {
-			result.WriteRune(ch)
-		}
-	}
-	return result.String()
 }
