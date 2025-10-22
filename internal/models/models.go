@@ -22,6 +22,8 @@ type GeneratorOptions struct {
 	IncludeDigits       bool `json:"include_digits"`
 	IncludeUppercase    bool `json:"include_uppercase"`
 	IncludeSpecialChars bool `json:"include_special_chars"`
+	MinNumberDigits     int  `json:"min_number_digits,omitempty"`
+	MinNumberSpecial    int  `json:"min_number_special,omitempty"`
 }
 
 // KeyValueConfig speicifies which keys to rotate in the key-value secrets
