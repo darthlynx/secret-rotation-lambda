@@ -20,10 +20,8 @@ type RotationRequest struct {
 type GeneratorOptions struct {
 	Length              int  `json:"length"`
 	IncludeDigits       bool `json:"include_digits"`
-	IncludeLowercase    bool `json:"include_lowercase"`
 	IncludeUppercase    bool `json:"include_uppercase"`
 	IncludeSpecialChars bool `json:"include_special_chars"`
-	ExcludeAmbiguous    bool `json:"exclude_ambiguous"` // e.g., 'O', '0', 'l', '1'
 }
 
 // KeyValueConfig speicifies which keys to rotate in the key-value secrets

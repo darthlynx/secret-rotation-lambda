@@ -15,10 +15,6 @@ func ValidateRotationRequest(req models.RotationRequest) error {
 		return err
 	}
 
-	if err := ValidateGeneratorOptions(req.GeneratorOpts); err != nil {
-		return err
-	}
-
 	if req.SecretType == models.SecretTypeKeyValue || req.SecretType == models.SecretTypeJSON {
 		if err := validateKeyValueConfig(req.KeyValueConfig); err != nil {
 			return err
@@ -48,18 +44,6 @@ func validateSecretType(secretType models.SecretType) error {
 	default:
 		return errors.New("invalid secret_type")
 	}
-}
-
-func ValidateGeneratorOptions(opts models.GeneratorOptions) error {
-	if opts.Length < 8 || opts.Length > 2048 {
-		return errors.New("length must be between 8 and 2048")
-	}
-
-	hasCharType := opts.IncludeDigits || opts.IncludeUppercase || opts.IncludeLowercase || opts.IncludeSpecialChars
-	if !hasCharType {
-		return errors.New("at least one character type must be included")
-	}
-	return nil
 }
 
 func validateKeyValueConfig(cfg *models.KeyValueConfig) error {
