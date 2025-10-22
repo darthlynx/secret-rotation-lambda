@@ -65,7 +65,7 @@ func TestGenerate(t *testing.T) {
 	}
 }
 
-func TestGenerateLength(t *testing.T) {
+func TestGenerateDigitsLength(t *testing.T) {
 	gen := New()
 
 	tests := []struct {
@@ -74,29 +74,54 @@ func TestGenerateLength(t *testing.T) {
 		wantLen int
 	}{
 		{
-			name: "check digit length is 1/4 of total length",
+			name: "check digit length is 0 when not included",
+			opts: models.GeneratorOptions{
+				Length:        16,
+				IncludeDigits: false,
+			},
+			wantLen: 0,
+		},
+		{
+			name: "check digits length is 1 of total length if MinNumberDigits not set",
 			opts: models.GeneratorOptions{
 				Length:        16,
 				IncludeDigits: true,
 			},
-			wantLen: 4,
+			wantLen: 1,
 		},
 		{
-			name: "check special chars length is 1/4 of total length",
+			name: "check digits lengths is set by MinNumberDigits",
 			opts: models.GeneratorOptions{
-				Length:              16,
-				IncludeSpecialChars: true,
+				Length:          24,
+				IncludeDigits:   true,
+				MinNumberDigits: 20,
 			},
-			wantLen: 4,
+			wantLen: 20,
 		},
 		{
-			name: "check special chars and digits length is 1/2 of total length",
+			name: "check special chars is set to 0 when not included",
 			opts: models.GeneratorOptions{
-				Length:              16,
-				IncludeDigits:       true,
+				Length:              10,
+				IncludeSpecialChars: false,
+			},
+			wantLen: 0,
+		},
+		{
+			name: "check special chars is set to 1 when included and MinNumberSpecial not set",
+			opts: models.GeneratorOptions{
+				Length:              10,
 				IncludeSpecialChars: true,
 			},
-			wantLen: 8,
+			wantLen: 1,
+		},
+		{
+			name: "check special chars is set by MinNumberSpecial",
+			opts: models.GeneratorOptions{
+				Length:              10,
+				IncludeSpecialChars: true,
+				MinNumberSpecial:    7,
+			},
+			wantLen: 7,
 		},
 	}
 
