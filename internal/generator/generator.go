@@ -1,10 +1,14 @@
 package generator
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/darthlynx/secret-rotation-lambda/internal/models"
 	"github.com/sethvargo/go-password/password"
+)
+
+const (
+	MinSecretLength = 8
 )
 
 // Generator defines the interface for secret generation.
@@ -24,8 +28,8 @@ func New() *SecretGenerator {
 //
 // Number of digits and symbols are calculated as 1/4 of the total length if included.
 func (g *SecretGenerator) Generate(opts models.GeneratorOptions) (string, error) {
-	if opts.Length < 8 {
-		return "", errors.New("length must be at least 8")
+	if opts.Length < MinSecretLength {
+		return "", fmt.Errorf("length must be at least %d", MinSecretLength)
 	}
 	numDigits := 0
 	if opts.IncludeDigits {
