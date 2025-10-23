@@ -5,9 +5,6 @@ AWS Lambda which rotates SecretManager secrets
 ```bash
 # for your local host machine
 make build
-
-# for linux AMD64
-make build-linux
 ```
 
 ## Package to Zip
@@ -15,15 +12,25 @@ make build-linux
 make package
 ```
 
-## Run tests
+## Run unit tests
 
 ```bash
 make test
 ```
 
+## Run lambda simulation locally
+
+```bash
+export AWS_ACCESS_KEY_ID=your_key_id
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+# Optional, if using temporary credentials:
+export AWS_SESSION_TOKEN=your_token
+
+make local-build
+```
+
 ## Unresolved issues (TODO):
 1. Fix build for all platforms (Makefile)
-2. Fix local testing (make local-test)
-3. Implement deployment part
-4. Add documentation for deployment part
-5. Document lambda input parameters
+2. Implement deployment part
+3. Add documentation for deployment part
+4. Document lambda input parameters
