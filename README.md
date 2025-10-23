@@ -20,6 +20,10 @@ make test
 
 ## Run lambda simulation locally
 
+Prerequisites:
+- Docker desktop
+- AWS credentials
+
 ```bash
 export AWS_ACCESS_KEY_ID=your_key_id
 export AWS_SECRET_ACCESS_KEY=your_secret_key
