@@ -21,9 +21,10 @@ build: deps
 	@mkdir -p $(BUILD_DIR)
 	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) $(CMD_DIR)
 
-# Build for Linux AMD64
+# Build binary and docker image for Linux ARM64
 build-linux:
-	@$(MAKE) build GOOS=linux GOARCH=amd64
+	@$(MAKE) build GOOS=linux GOARCH=arm64
+	docker build --platform linux/arm64 -t secret-rotation-lambda:latest .
 
 # Build for multiple platforms
 build-all:
@@ -89,34 +90,17 @@ deps:
 	go mod tidy
 
 # Local testing with sample event
-local-test: build
-	@echo "Testing locally..."
-	@echo '{"secret_arn":"arn:aws:secretsmanager:us-east-1:123456789012:secret:test","secret_type":"plaintext","generator_options":{"length":16,"include_digits":true,"include_uppercase":true,"include_lowercase":true,"include_special_chars":false}}' | \
-	go run cmd/lambda/main.go
-
-# Deploy to AWS (requires AWS CLI and appropriate permissions)
-# deploy: package
-# 	@echo "Deploying to AWS Lambda..."
-# 	@read -p "Enter Lambda function name: " func_name; \
-# 	aws lambda update-function-code \
-# 		--function-name $$func_name \
-# 		--zip-file fileb://$(LAMBDA_ZIP)
-# 	@echo "Deployment complete"
-
-# Create new Lambda function (first time setup)
-# create-function: package
-# 	@echo "Creating new Lambda function..."
-# 	@read -p "Enter Lambda function name: " func_name; \
-# 	read -p "Enter IAM role ARN: " role_arn; \
-# 	aws lambda create-function \
-# 		--function-name $$func_name \
-# 		--runtime provided.al2 \
-# 		--handler bootstrap \
-# 		--role $$role_arn \
-# 		--zip-file fileb://$(LAMBDA_ZIP) \
-# 		--timeout 30 \
-# 		--memory-size 256
-# 	@echo "Function created"
+local-test: build-linux
+	@echo "Testing locally with Lambda RIE..."
+	@docker run --rm -p 9000:8080 \
+	    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+		-e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+		-e AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN}" \
+		secret-rotation-lambda:latest &
+	@sleep 2
+	@curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+		-d '{"secret_arn":"arn:aws:secretsmanager:us-east-1:123456789012:secret:test","secret_type":"plaintext","generator_options":{"length":16,"include_digits":true,"include_uppercase":true,"include_special_chars":true}}'
+	@docker stop $$(docker ps -q --filter ancestor=secret-rotation-lambda:latest)
 
 # Show Help
 help:
